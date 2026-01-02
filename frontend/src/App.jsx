@@ -126,7 +126,7 @@ const App = () => {
 
   const fetchStats = async () => {
     try {
-      const res = await axios.get('http://localhost:8000/user-stats');
+      const res = await axios.get('https://cerebra-backend.onrender.com/user-stats');
       setHistory(res.data.history || []);
       setXp(res.data.total_xp || 0);
       setLevel(Math.floor((res.data.total_xp || 0) / 500) + 1);
@@ -137,7 +137,7 @@ const App = () => {
       if (!date) return;
       const dateStr = formatDate(date);
       try {
-          const res = await axios.get(`http://localhost:8000/calendar/get?date=${dateStr}`);
+          const res = await axios.get(`https://cerebra-backend.onrender.com/calendar/get?date=${dateStr}`);
           setCalendarTasks(Array.isArray(res.data.tasks) ? res.data.tasks : []);
       } catch (e) { setCalendarTasks([]); }
   };
@@ -155,7 +155,7 @@ const App = () => {
       
       if (taskId) {
           try {
-              await axios.put(`http://localhost:8000/calendar/update/${taskId}`, { task: editForm.task, time: editForm.time });
+              await axios.put(`https://cerebra-backend.onrender.com/calendar/update/${taskId}`, { task: editForm.task, time: editForm.time });
               fetchCalendarTasks(selectedDate);
           } catch(e) {}
       }
@@ -178,7 +178,7 @@ const App = () => {
   const completeSession = async () => {
     new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg').play();
     confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-    await axios.post('http://localhost:8000/log-session', { topic: focusTask, duration: timerDuration, xp: 100 });
+    await axios.post('https://cerebra-backend.onrender.com/log-session', { topic: focusTask, duration: timerDuration, xp: 100 });
     setFocusTask(null);
     fetchStats();
   };
@@ -193,7 +193,7 @@ const App = () => {
       setSelectedAnswer(null); // Reset selection
       
       try {
-          const res = await axios.post('http://localhost:8000/generate-quiz', { topic: topic });
+          const res = await axios.post('https://cerebra-backend.onrender.com/generate-quiz', { topic: topic });
           if(res.data.questions) {
               setQuizData(res.data.questions);
           }
@@ -221,7 +221,7 @@ const App = () => {
           // Log XP
           const xpGained = quizScore * 20;
           if (xpGained > 0) {
-             axios.post('http://localhost:8000/log-session', { topic: "Quiz Completed", duration: 5, xp: xpGained });
+             axios.post('https://cerebra-backend.onrender.com/log-session', { topic: "Quiz Completed", duration: 5, xp: xpGained });
              fetchStats();
           }
       }
@@ -239,7 +239,7 @@ const App = () => {
     const dateStr = formatDate(selectedDate);
 
     try {
-      const res = await axios.post('http://localhost:8000/generate-plan', {
+      const res = await axios.post('https://cerebra-backend.onrender.com/generate-plan', {
         energy_level: energy, hours_available: hours, subjects: topics.split('\n').filter(t => t.trim() !== ""),
         current_time: timeString, date: dateStr 
       });
@@ -248,7 +248,7 @@ const App = () => {
       setCompletedTasks({});
       
       const savePromises = res.data.schedule.map(item => {
-          return axios.post('http://localhost:8000/calendar/add', { 
+          return axios.post('https://cerebra-backend.onrender.com/calendar/add', { 
               date: dateStr, 
               time: item.time, 
               task: item.task, 
@@ -294,7 +294,7 @@ const App = () => {
     const formData = new FormData();
     formData.append("file", file);
     try {
-      const res = await axios.post('http://localhost:8000/analyze-syllabus', formData);
+      const res = await axios.post('https://cerebra-backend.onrender.com/analyze-syllabus', formData);
       if (res.data.topics) setTopics(res.data.topics.join("\n\n"));
     } catch (err) { alert("File Error"); }
     setAnalyzingFile(false);
@@ -304,7 +304,7 @@ const App = () => {
       const wasCompleted = completedTasks[index];
       setCompletedTasks(prev => ({ ...prev, [index]: !wasCompleted }));
       const xpChange = wasCompleted ? -50 : 50; 
-      await axios.post('http://localhost:8000/log-session', { topic: wasCompleted ? `Undo: ${taskName}` : taskName, duration: 0, xp: xpChange });
+      await axios.post('https://cerebra-backend.onrender.com/log-session', { topic: wasCompleted ? `Undo: ${taskName}` : taskName, duration: 0, xp: xpChange });
       if (!wasCompleted) {
           confetti({ particleCount: 50, spread: 50, origin: { y: 0.7 } });
           new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg').play();
@@ -314,13 +314,13 @@ const App = () => {
   
   const resetHistory = async () => {
       if(!window.confirm("Clear history?")) return;
-      try { await axios.delete(`http://localhost:8000/reset-history?reset_xp=${window.confirm("Reset XP?")}`); fetchStats(); } catch (e) {}
+      try { await axios.delete(`https://cerebra-backend.onrender.com/reset-history?reset_xp=${window.confirm("Reset XP?")}`); fetchStats(); } catch (e) {}
   };
 
   const deleteCalendarTask = async (taskId) => {
       if(!window.confirm("Delete this task?")) return;
       try { 
-          await axios.delete(`http://localhost:8000/calendar/delete/${taskId}`); 
+          await axios.delete(`https://cerebra-backend.onrender.com/calendar/delete/${taskId}`); 
           fetchCalendarTasks(selectedDate); 
       } catch (e) {}
   };
@@ -330,7 +330,7 @@ const App = () => {
       const newTime = window.prompt("Update time:", currentTime);
       if (!newText || !newTime) return;
       try { 
-          await axios.put(`http://localhost:8000/calendar/update/${taskId}`, { task: newText, time: newTime }); 
+          await axios.put(`https://cerebra-backend.onrender.com/calendar/update/${taskId}`, { task: newText, time: newTime }); 
           fetchCalendarTasks(selectedDate); 
       } catch (e) {}
   };
@@ -340,8 +340,8 @@ const App = () => {
       if(!window.confirm(msg)) return;
       try {
           const url = onlyToday 
-            ? `http://localhost:8000/calendar/reset?date=${formatDate(selectedDate)}` 
-            : `http://localhost:8000/calendar/reset`;
+            ? `https://cerebra-backend.onrender.com/calendar/reset?date=${formatDate(selectedDate)}` 
+            : `https://cerebra-backend.onrender.com/calendar/reset`;
           await axios.delete(url); 
           fetchCalendarTasks(selectedDate); 
           alert("Calendar Updated.");
