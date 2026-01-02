@@ -85,7 +85,7 @@ const App = () => {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
 
   // --- AUTH FUNCTIONS ---
-  const handleAuth = async (e) => {
+const handleAuth = async (e) => {
       e.preventDefault();
       setAuthLoading(true);
       try {
@@ -94,14 +94,17 @@ const App = () => {
           formData.append('password', password);
 
           if (authMode === 'signup') {
-              await axios.post('http://localhost:8000/register', { username, password });
+              // CHANGE 1: Use 'api.post' instead of 'axios.post' with localhost
+              await api.post('/register', { username, password });
               alert("Account created! Logging in...");
-              // Auto login after register
-              const res = await axios.post('http://localhost:8000/token', formData);
+              
+              // CHANGE 2: Use 'api.post'
+              const res = await api.post('/token', formData);
               localStorage.setItem('cerebra_token', res.data.access_token);
               setToken(res.data.access_token);
           } else {
-              const res = await axios.post('http://localhost:8000/token', formData);
+              // CHANGE 3: Use 'api.post'
+              const res = await api.post('/token', formData);
               localStorage.setItem('cerebra_token', res.data.access_token);
               setToken(res.data.access_token);
           }
