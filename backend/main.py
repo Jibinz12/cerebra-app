@@ -111,9 +111,15 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
 
 app = FastAPI(title="Cerebra Engine")
 
+origins = [
+    "http://localhost:5173",
+    "https://cerebra-app.vercel.app", # Your actual Vercel URL from the screenshot
+    "https://cerebra-app.vercel.app/" # Add with trailing slash just in case
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins, # Use the list above
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -310,3 +316,4 @@ def generate_quiz(req: QuizRequest): # No Auth needed for quiz generation logic 
         )
         return json.loads(response.text)
     except: return {"error": "Quiz failed"}
+
