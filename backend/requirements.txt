@@ -6,4 +6,7 @@ sqlalchemy
 google-genai
 pypdf
 pillow
+passlib
+bcrypt
+python-jose
 python-multipart
