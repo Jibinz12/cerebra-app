@@ -29,7 +29,7 @@ const calendarStyle = `
 // --- API HELPER ---
 // Automatically adds the token to requests
 const api = axios.create({
-    baseURL: 'http://localhost:8000' // CHANGE THIS FOR VERCEL DEPLOYMENT
+    baseURL: 'https://cerebra-backend.onrender.com' 
 });
 
 api.interceptors.request.use((config) => {
